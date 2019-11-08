@@ -1,23 +1,24 @@
-package com.github.sigalhu.flink.batch;
+package com.github.sigalhu.flink.streaming;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.StringUtils;
 
 /**
- * 批处理统计词频
- * 
+ * 实时统计词频，运行之前控制台执行 nc -lk 9999
+ *
  * @author huxujun
  * @date 2019/11/8
  */
-public class WordStatBatchJob {
+public class WordStatStreamingJob {
 
     public static void main(String[] args) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        DataSource<String> text = env.readTextFile(ClassLoader.getSystemResource("words.txt").getPath());
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        DataStreamSource<String> text = env.socketTextStream("localhost", 9999);
         text.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(String line, Collector<Tuple2<String, Integer>> collector) throws Exception {
@@ -27,6 +28,7 @@ public class WordStatBatchJob {
                     }
                 }
             }
-        }).groupBy(0).sum(1).print();
+        }).keyBy(0).timeWindow(Time.seconds(5)).sum(1).print();
+        env.execute("Flink Streaming Java API Skeleton");
     }
 }
