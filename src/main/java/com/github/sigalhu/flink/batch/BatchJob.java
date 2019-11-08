@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.github.sigalhu;
+package com.github.sigalhu.flink.batch;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 
