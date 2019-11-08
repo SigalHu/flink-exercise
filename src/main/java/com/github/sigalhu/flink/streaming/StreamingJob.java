@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.github.sigalhu.flink.stream;
+package com.github.sigalhu.flink.streaming;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
